@@ -83,9 +83,9 @@
 
     <p>Note lengths:</p>
     <ul>
-        <li>Fast = 50 ms</li>
-        <li>Final = 80 ms</li>
-        <li>Long = 160 ms</li>
+        <li>Fast (default length) = 50 ms</li>
+        <li>Fast (final tone) = 80 ms</li>
+        <li>Long (for errors) = 160 ms</li>
     </ul>
 
     <table>
@@ -99,7 +99,7 @@
                 <button onclick="play(auxl.insert)">Insert card</button>
             </td>
             <td>
-                1 low fast, 1 high final
+                1 low, 1 high
             </td>
             <td>
                 Please insert card, start your action, awaiting input
@@ -110,7 +110,7 @@
                 <button onclick="play(auxl.waiting)">Waiting</button>
             </td>
             <td>
-                2 low fast, 1 high final
+                1 low, 2 high
             </td>
             <td>
                 Still waiting, I need your input
@@ -121,7 +121,7 @@
                 <button onclick="play(auxl.attention)">Attention</button>
             </td>
             <td>
-                1 high fast, 1 high final
+                2 high
             </td>
             <td>
                 Pay attention, message, notification
@@ -137,7 +137,7 @@
                 <button onclick="play(auxl.remove)">Take card</button>
             </td>
             <td>
-                1 hi fast, 1 low final
+                1 high, 1 low
             </td>
             <td>
                 Please remove your card, finish up
@@ -148,7 +148,7 @@
                 <button onclick="play(auxl.done)">Completed</button>
             </td>
             <td>
-                1 hi fast, 1 low fast, 1 mid final
+                1 high, 1 low, 1 mid
             </td>
             <td>
                 All done, thank you, goodbye
@@ -164,7 +164,7 @@
                 <button onclick="play(auxl.click)">Key click</button>
             </td>
             <td>
-                1 mid fast (or high fast)
+                1 mid (or high)
             </td>
             <td>
                 Key click, key input, mouse click, button pushed
