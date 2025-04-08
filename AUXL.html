@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+<head>
+    <style>
+    
+        * { font-family: sans-serif; }
+        td { padding-right: 3em; }
+    
+    </style>
+    <script>
+        
+        var audioCtx = null;
+        
+        function initAudio() {
+            audioCtx = new AudioContext();
+        }
+
+        async function finalizeAudio() {
+            await audioCtx.close();
+            audioCtx = null;
+        }
+        
+        async function playTone(frequency, durationMs) {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.value = frequency;
+            oscillator.connect(gainNode);
+            
+            gainNode.connect(audioCtx.destination);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 0.005);
+
+            oscillator.start();
+            await new Promise(resolve => setTimeout(resolve, durationMs));
+
+            gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.01);
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+            oscillator.stop();
+        }
+
+        const hi  = 587.32953583481512;
+        const mid = 493.883301256124111;
+        const lo  = 391.995435981749294;
+        
+        const auxl = {
+            insert:    [ [lo,50], [hi,80] ],
+            waiting:   [ [lo,50], [hi,50], [hi,80] ],
+            attention: [ [hi,50], [hi,80] ],
+            remove:    [ [hi,50], [lo,80] ],
+            done:      [ [hi,50], [lo,50], [mid,80] ],
+            click:     [ [mid,50] ],
+            wrong:     [ [lo,160], [lo,160] ],
+            error:     [ [lo,160], [lo,160], [lo,160] ],
+            critical:  [ [lo,160], [lo,160], [lo,160], [lo,160] ]
+        };
+
+        async function play(tones) {
+            initAudio();
+            
+            for (const [freq, dur] of tones) {
+                await playTone(freq, dur);
+            }
+            
+            await finalizeAudio();
+        }
+        
+    </script>
+</head>
+<body>
+
+    <h1>AUXL - Auditory Experience Language</h1>
+
+    <p>Note frequencies in this example:</p>
+    <ul>
+        <li>Low = G4 (392 Hz)</li>
+        <li>Mid = B4 (494 Hz)</li>
+        <li>High = D5 (587 Hz)</li>
+    </ul>
+
+    <p>Note lengths:</p>
+    <ul>
+        <li>Fast = 50 ms</li>
+        <li>Final = 80 ms</li>
+        <li>Long = 160 ms</li>
+    </ul>
+
+    <table>
+        <tr>
+            <td colspan=3>
+                <h2>Awaiting signals</h2>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button onclick="play(auxl.insert)">Insert card</button>
+            </td>
+            <td>
+                1 low fast, 1 high final
+            </td>
+            <td>
+                Please insert card, start your action, awaiting input
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button onclick="play(auxl.waiting)">Waiting</button>
+            </td>
+            <td>
+                2 low fast, 1 high final
+            </td>
+            <td>
+                Still waiting, I need your input
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button onclick="play(auxl.attention)">Attention</button>
+            </td>
+            <td>
+                1 high fast, 1 high final
+            </td>
+            <td>
+                Pay attention, message, notification
+            </td>
+        </tr>
+        <tr>
+            <td colspan=3>
+                <h2>Completion signals</h2>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button onclick="play(auxl.remove)">Take card</button>
+            </td>
+            <td>
+                1 hi fast, 1 low final
+            </td>
+            <td>
+                Please remove your card, finish up
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button onclick="play(auxl.done)">Completed</button>
+            </td>
+            <td>
+                1 hi fast, 1 low fast, 1 mid final
+            </td>
+            <td>
+                All done, thank you, goodbye
+            </td>
+        </tr>
+        <tr>
+            <td colspan=3>
+                <h2>Feedback</h2>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button onclick="play(auxl.click)">Key click</button>
+            </td>
+            <td>
+                1 mid fast (or high fast)
+            </td>
+            <td>
+                Key click, key input, mouse click, button pushed
+            </td>
+        </tr>
+        <tr>
+            <td colspan=3>
+                <h2>Errors</h2>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button onclick="play(auxl.wrong)">Wrong input</button>
+            </td>
+            <td>
+                2 low long
+            </td>
+            <td>
+                Wrong input entered, do not press that key, don't understand
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button onclick="play(auxl.error)">Error condition</button>
+            </td>
+            <td>
+                3 low long
+            </td>
+            <td>
+                Error condition, please try again
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button onclick="play(auxl.critical)">Critical condition</button>
+            </td>
+            <td>
+                4 low long
+            </td>
+            <td>
+                Critical condition (fault), trying again is pointless
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
